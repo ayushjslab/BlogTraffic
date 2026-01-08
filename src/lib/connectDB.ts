@@ -26,7 +26,7 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     cached.promise = mongoose
       .connect(MONGODB_URI!, {
-        dbName: "sitebrain",
+        dbName: "blogtraffic",
       })
       .then((mongoose) => {
         console.log("✅ MongoDB connected");

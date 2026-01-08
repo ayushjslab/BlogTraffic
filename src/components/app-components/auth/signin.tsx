@@ -1,5 +1,4 @@
 "use client"
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FcGoogle } from 'react-icons/fc';
 
@@ -7,7 +6,6 @@ const ModernSignIn = () => {
   return (
     <div className="flex min-h-screen w-full bg-[#0a0a0a] text-white overflow-hidden">
       
-      {/* Left Section: The Image */}
       <motion.div 
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -19,7 +17,7 @@ const ModernSignIn = () => {
           alt="Minimalist Architecture"
           className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 hover:scale-105 transition-transform duration-3000"
         />
-        <div className="absolute inset-0 bg-linear-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0a] via-transparent to-transparent" />
         
         <div className="absolute bottom-12 left-12">
           <h2 className="text-5xl font-light tracking-tighter leading-none">

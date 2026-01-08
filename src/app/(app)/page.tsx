@@ -1,9 +1,7 @@
-import React from 'react'
+import { SignInPage } from '@/components/app-components/auth'
 
 const HomePage = () => {
-  return (
-    <div>HomePage</div>
-  )
+    return <SignInPage />
 }
 
 export default HomePage

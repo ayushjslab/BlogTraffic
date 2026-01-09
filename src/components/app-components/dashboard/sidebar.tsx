@@ -22,7 +22,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: FolderPlus, label: 'Add Website', href: '/dashboard/add-website' },
   { icon: FolderCog, label: "Website Settings", href: '/dashboard/website-settings' },
-  { icon: FileText, label: 'Posts', href: '/dashboard/posts' },
+  { icon: FileText, label: 'Blogs', href: '/dashboard/blogs' },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
   { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];

@@ -5,12 +5,12 @@ export interface IPost {
   userId: Types.ObjectId;
   websiteId: Types.ObjectId;
   title: string;
-  slug: string;
-  content: string;
+  slug?: string;
+  content?: string;
   seoTitle?: string;
   seoDescription?: string;
-  keywords: string[];
-  status: "draft" | "scheduled" | "published" | "failed";
+  keywords?: string[];
+  status?: "draft" | "scheduled" | "published" | "failed";
   scheduledFor?: Date;
   publishedAt?: Date;
   createdAt: Date;
@@ -23,8 +23,8 @@ const BlogSchema = new Schema<IPost>(
     websiteId: { type: Schema.Types.ObjectId, ref: "Website", required: true },
 
     title: { type: String, required: true },
-    slug: { type: String, required: true },
-    content: { type: String, required: true },
+    slug: { type: String },
+    content: { type: String },
 
     seoTitle: String,
     seoDescription: String,

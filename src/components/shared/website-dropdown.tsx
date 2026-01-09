@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Globe, Check, Plus, Activity } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Globe, Check, Plus, Activity } from "lucide-react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react";
+import { useWebsiteStore } from "@/lib/store";
 
 interface Website {
   id: string;
@@ -18,28 +19,36 @@ const WebsiteDropdown = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [websites, setWebsites] = useState<Website[]>([]);
-  const [selected, setSelected] = useState<Website | null>(null);
 
-  // 1. Fetch websites
+  // Zustand store
+  const currentWebsiteId = useWebsiteStore((state) => state.currentWebsiteId);
+  const setWebsiteId = useWebsiteStore((state) => state.setWebsiteId);
+
+  // Find the selected website from the list
+  const selected = websites.find((site) => site.id === currentWebsiteId) || null;
+
+  // Fetch websites
   useEffect(() => {
     const fetchAllWebsites = async () => {
       if (!session?.user?.id) return;
       try {
-        const response = await axios.get(`/api/website/fetch-all?userId=${session.user.id}`);
-        const fetchedWebsites = response.data.websites;
+        const response = await axios.get(
+          `/api/website/fetch-all?userId=${session.user.id}`
+        );
+        const fetchedWebsites: Website[] = response.data.websites;
         setWebsites(fetchedWebsites);
-        
-        // 2. Auto-select the first website if none selected
-        if (fetchedWebsites.length > 0 && !selected) {
-          setSelected(fetchedWebsites[0]);
+
+        // Auto-select first website if none selected
+        if (fetchedWebsites.length > 0 && !currentWebsiteId) {
+          setWebsiteId(fetchedWebsites[0].id);
         }
       } catch (error) {
-        console.error("Error fetching nodes:", error);
+        console.error("Error fetching websites:", error);
       }
     };
 
     fetchAllWebsites();
-  }, [session, selected]); // Added selected check to prevent infinite loop but ensure sync
+  }, [session, currentWebsiteId, setWebsiteId]);
 
   return (
     <div className="relative z-100 selection:bg-white selection:text-black">
@@ -62,7 +71,9 @@ const WebsiteDropdown = () => {
         </div>
 
         <div className="text-left min-w-[100px]">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-gray-500 font-bold leading-none mb-1 text-nowrap">Active Node</p>
+          <p className="text-[9px] uppercase tracking-[0.4em] text-gray-500 font-bold leading-none mb-1 text-nowrap">
+            Active Node
+          </p>
           <h3 className="text-sm font-black tracking-tight text-white uppercase italic truncate">
             {selected ? selected.name : "No Node Active"}
           </h3>
@@ -80,7 +91,7 @@ const WebsiteDropdown = () => {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop to close */}
+            {/* Backdrop */}
             <div className="fixed inset-0 z-[-1]" onClick={() => setIsOpen(false)} />
 
             <motion.div
@@ -91,19 +102,23 @@ const WebsiteDropdown = () => {
               className="absolute top-full left-0 mt-4 w-72 bg-[#0a0a0a]/95 border border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-2xl shadow-[0_30px_60px_rgba(0,0,0,0.5)] p-2"
             >
               <div className="px-4 py-3 border-b border-white/5 mb-2 flex justify-between items-center">
-                <span className="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-black text-nowrap">Switch Connection</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-black text-nowrap">
+                  Switch Connection
+                </span>
                 <Activity size={12} className="text-gray-800 animate-pulse" />
               </div>
 
               <div className="max-h-64 overflow-y-auto custom-scrollbar">
                 {websites.length === 0 ? (
-                    <p className="text-[10px] text-gray-500 text-center py-4 uppercase tracking-widest">No nodes found</p>
+                  <p className="text-[10px] text-gray-500 text-center py-4 uppercase tracking-widest">
+                    No nodes found
+                  </p>
                 ) : (
                   websites.map((site) => (
                     <motion.div
                       key={site.id}
                       onClick={() => {
-                        setSelected(site);
+                        setWebsiteId(site.id);
                         setIsOpen(false);
                       }}
                       className="relative group/item flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors"
@@ -115,35 +130,49 @@ const WebsiteDropdown = () => {
                       />
 
                       <div className="flex items-center gap-3">
-                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${selected?.id === site.id ? 'bg-white shadow-[0_0_10px_white]' : 'bg-gray-800'}`} />
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
+                            currentWebsiteId === site.id
+                              ? "bg-white shadow-[0_0_10px_white]"
+                              : "bg-gray-800"
+                          }`}
+                        />
                         <div>
-                          <p className={`text-xs font-bold transition-colors ${selected?.id === site.id ? 'text-white' : 'text-gray-500 group-hover/item:text-gray-200'}`}>
+                          <p
+                            className={`text-xs font-bold transition-colors ${
+                              currentWebsiteId === site.id
+                                ? "text-white"
+                                : "text-gray-500 group-hover/item:text-gray-200"
+                            }`}
+                          >
                             {site.name}
                           </p>
-                          <p className="text-[9px] text-gray-700 font-mono tracking-tighter">{site.url}</p>
+                          <p className="text-[9px] text-gray-700 font-mono tracking-tighter">
+                            {site.url}
+                          </p>
                         </div>
                       </div>
 
-                      {selected?.id === site.id && (
-                        <Check size={14} className="text-white" />
-                      )}
+                      {currentWebsiteId === site.id && <Check size={14} className="text-white" />}
                     </motion.div>
                   ))
                 )}
               </div>
 
               <div className="mt-2 pt-2 border-t border-white/5">
-                <button 
+                <button
                   onClick={() => {
                     setIsOpen(false);
-                    router.push('/dashboard/add-website');
+                    router.push("/dashboard/add-website");
                   }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:text-white hover:bg-white/5 transition-all group/add"
                 >
                   <div className="w-6 h-6 rounded-md border border-dashed border-gray-700 flex items-center justify-center group-hover/add:border-white/40 group-hover/add:bg-white group-hover/add:text-black transition-all">
                     <Plus size={14} />
                   </div>
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Deploy New Site</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold">
+                    Deploy New Site
+                  </span>
                 </button>
               </div>
             </motion.div>

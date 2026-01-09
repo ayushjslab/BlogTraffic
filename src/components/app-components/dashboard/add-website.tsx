@@ -144,7 +144,7 @@ const AddWebsitePage = () => {
               <div className="relative">
                 <input 
                   type="text" 
-                  placeholder="https://catalog.io/api/v1/posts"
+                  placeholder="/api/v1/posts"
                   className={inputStyle + " pl-12"}
                   onChange={(e) => setFormData({...formData, endpoint: e.target.value})}
                 />

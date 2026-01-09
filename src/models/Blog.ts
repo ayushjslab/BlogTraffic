@@ -1,0 +1,47 @@
+import { Schema, model, models, Types } from "mongoose";
+
+export interface IPost {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  websiteId: Types.ObjectId;
+  title: string;
+  slug: string;
+  content: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  keywords: string[];
+  status: "draft" | "scheduled" | "published" | "failed";
+  scheduledFor?: Date;
+  publishedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const BlogSchema = new Schema<IPost>(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    websiteId: { type: Schema.Types.ObjectId, ref: "Website", required: true },
+
+    title: { type: String, required: true },
+    slug: { type: String, required: true },
+    content: { type: String, required: true },
+
+    seoTitle: String,
+    seoDescription: String,
+    keywords: [{ type: String }],
+
+    status: {
+      type: String,
+      enum: ["draft", "scheduled", "published", "failed"],
+      default: "draft",
+    },
+
+    scheduledFor: Date,
+    publishedAt: Date,
+  },
+  { timestamps: true }
+);
+
+const Blog = models.Blog || model<IPost>("Blog", BlogSchema);
+
+export default Blog

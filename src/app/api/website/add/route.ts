@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/connectDB";
 import Website from "@/models/Website";
+import { scrapeWebsite } from "./scrape";
+import Scrape from "@/models/Scrape";
 
 // POST: Add a website
 export async function POST(req: Request) {
@@ -24,6 +26,15 @@ export async function POST(req: Request) {
       description: desc,
       blogPostEndPoint: endpoint,
       userId,
+    });
+
+    const scrapeData = await scrapeWebsite(url);
+
+    await Scrape.create({
+      websiteId: website._id,
+      brand: scrapeData.brand,
+      seo: scrapeData.seo,
+      services: scrapeData.services,
     });
 
     return NextResponse.json(

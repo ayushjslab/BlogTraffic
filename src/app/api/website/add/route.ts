@@ -4,7 +4,6 @@ import Website from "@/models/Website";
 import { scrapeWebsite } from "./scrape";
 import Scrape from "@/models/Scrape";
 
-// POST: Add a website
 export async function POST(req: Request) {
   try {
     await connectDB();

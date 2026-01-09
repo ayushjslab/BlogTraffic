@@ -5,12 +5,12 @@ import { connectDB } from "@/lib/connectDB";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
 
-    const websiteId = params.id;
+    const websiteId = (await params).id;
     if (!Types.ObjectId.isValid(websiteId)) {
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
@@ -43,12 +43,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
 
-    const websiteId = params.id;
+    const websiteId = (await params).id;
     if (!Types.ObjectId.isValid(websiteId)) {
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }

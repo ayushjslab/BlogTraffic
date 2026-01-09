@@ -20,11 +20,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: FolderPlus, label: 'Add Website', href: '/dashboard/add-website' },
-  { icon: FolderCog, label: "Website Settings", href: '/dashboard/website-settings' },
-  { icon: FileText, label: 'Blogs', href: '/dashboard/blogs' },
-  { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
-  { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+  { icon: FolderPlus, label: 'Add Website', href: '/add-website' },
+  { icon: FolderCog, label: "Website Settings", href: '/website-settings' },
+  { icon: FileText, label: 'Blogs', href: '/blogs' },
+  { icon: BarChart3, label: 'Analytics', href: '/analytics' },
+  { icon: Settings, label: 'Settings', href: '/settings' },
 ];
 
 const Sidebar = () => {

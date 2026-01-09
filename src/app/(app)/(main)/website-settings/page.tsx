@@ -1,5 +1,4 @@
-import { WebsiteSettingsPage } from '@/components/app-components/dashboard'
-import React from 'react'
+import WebsiteSettingsPage from '@/components/app-components/website-settings/website-settings'
 
 const WebsiteSettings = () => {
   return (

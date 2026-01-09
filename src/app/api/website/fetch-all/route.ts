@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
       id: website._id.toString(),
       name: website.name,
       url: website.url,
+      logo: website.logo,
     }));
 
     return NextResponse.json({websites: websitesData}, { status: 200 });

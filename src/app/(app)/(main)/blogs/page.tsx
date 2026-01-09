@@ -1,4 +1,4 @@
-import BlogList from '@/components/app-components/dashboard/blogs'
+import BlogList from '@/components/app-components/blogs/blogs'
 
 const BlogsPage = () => {
     return (

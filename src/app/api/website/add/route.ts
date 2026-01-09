@@ -20,17 +20,16 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    const scrapeData = await scrapeWebsite(url);
 
     const website = await Website.create({
       name,
+      logo: scrapeData.brand.logo,
       url,
       description: desc,
       blogPostEndPoint: endpoint,
       userId,
     });
-
-    const scrapeData = await scrapeWebsite(url);
-
 
     const scrape = await Scrape.create({
       websiteId: website._id,
@@ -124,7 +123,6 @@ OUTPUT FORMAT (MANDATORY):
       { status: 201 }
     );
   } catch (error: any) {
-    // Duplicate website error
     console.log(error)
     if (error.code === 11000) {
       return NextResponse.json(

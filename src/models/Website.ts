@@ -5,6 +5,7 @@ export interface IWebsite {
   userId: Types.ObjectId;
   name: string;
   url: string;
+  logo?: string;
   description?: string;
   blogNumber: number;
   blogPostEndPoint: string;
@@ -24,6 +25,11 @@ const WebsiteSchema = new Schema<IWebsite>(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+
+    logo: {
+      type: String,
       trim: true,
     },
 

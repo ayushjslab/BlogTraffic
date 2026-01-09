@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useWebsiteStore } from "@/lib/store";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface Website {
   id: string;
+  logo: string;
   name: string;
   url: string;
 }
@@ -60,8 +62,11 @@ const WebsiteDropdown = () => {
         className="group relative flex items-center gap-4 bg-white/5 border border-white/10 hover:border-white/20 px-5 py-3 rounded-2xl backdrop-blur-xl transition-all duration-500 shadow-2xl"
       >
         <div className="relative flex items-center justify-center">
-          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-            <Globe size={16} className="text-black" />
+          <div className="w-8 h-8 flex items-center justify-center">
+            <Avatar>
+              <AvatarImage src={selected?.logo} alt={selected?.name} />
+              <AvatarFallback className="rounded-lg">{selected?.name[0].toUpperCase()}</AvatarFallback>
+            </Avatar>
           </div>
           {/* Signal Pulse */}
           <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -130,20 +135,18 @@ const WebsiteDropdown = () => {
                       />
 
                       <div className="flex items-center gap-3">
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
-                            currentWebsiteId === site.id
-                              ? "bg-white shadow-[0_0_10px_white]"
-                              : "bg-gray-800"
-                          }`}
-                        />
+                        <div className="w-8 h-8 flex items-center justify-center">
+                          <Avatar>
+                            <AvatarImage src={site?.logo} alt={site?.name} />
+                            <AvatarFallback className="rounded-lg">{site?.name[0].toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                        </div>
                         <div>
                           <p
-                            className={`text-xs font-bold transition-colors ${
-                              currentWebsiteId === site.id
-                                ? "text-white"
-                                : "text-gray-500 group-hover/item:text-gray-200"
-                            }`}
+                            className={`text-xs font-bold transition-colors ${currentWebsiteId === site.id
+                              ? "text-white"
+                              : "text-gray-500 group-hover/item:text-gray-200"
+                              }`}
                           >
                             {site.name}
                           </p>

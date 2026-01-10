@@ -9,41 +9,54 @@ import VelocitySection from '@/components/app-components/home/velocity-section'
 import FeedbackStats from '@/components/app-components/home/feedback-stats'
 import LuxuryPricing from '@/components/app-components/home/luxury-pricing'
 import FinalCTA from '@/components/app-components/home/final-cta'
+import FAQSection from '@/components/app-components/home/faq'
+import InternalLinking from '@/components/app-components/home/interlinking'
+import Benefits from '@/components/app-components/home/benefits'
 
 const HomePage = () => {
   return (
     <main className="bg-white dark:bg-black antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
       <Navbar />
-      
-      {/* 1. The Hook */}
+
+      {/* 1. Primary SEO Hook */}
       <HeroSection />
-      
-      {/* 2. Immediate Social Proof & Scale */}
+
+      {/* 2. Core Value Proposition */}
+      <Benefits />
+
+      {/* 3. Immediate Authority */}
       <StatsConsole />
-      
-      {/* 3. Feature Overview */}
+
+      {/* 4. Feature-Based Keyword Coverage */}
       <BentoFeatures />
-      
-      {/* 4. The Process (How it works) */}
+
+      {/* 5. How It Works */}
       <AutomationFlow />
-      
-      {/* 5. Deep Technical Authority */}
+
+      {/* 6. Technical SEO Authority */}
       <SEOIntelligence />
       <SEODominance />
-      
-      {/* 6. High Energy / Hype Transition */}
+
+      {/* 7. Engagement Boost */}
       <VelocitySection />
-      
-      {/* 7. Social Proof & Success Stories */}
+
+      {/* 8. Trust & Social Proof */}
       <FeedbackStats />
-      
-      {/* 8. Transactional Phase */}
+
+      {/* 9. Conversion */}
       <LuxuryPricing />
-      
-      {/* 9. The Closing */}
+
+      {/* 10. Crawl & Indexing Support */}
+      <InternalLinking />
+
+      {/* 11. Featured Snippet Target */}
+      <FAQSection />
+
+      {/* 12. Final Conversion */}
       <FinalCTA />
     </main>
   )
 }
+
 
 export default HomePage

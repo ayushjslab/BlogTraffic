@@ -34,7 +34,7 @@ export default function RootLayout({
         <GoogleSessionProviders>
           <ThemeProvider
             attribute={"class"}
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >

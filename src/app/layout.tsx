@@ -38,7 +38,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Toaster />
+            <Toaster
+              position="top-right"
+              expand={false}
+              richColors
+              closeButton
+            />
             <QueryProvider>{children}</QueryProvider>
           </ThemeProvider>
         </GoogleSessionProviders>

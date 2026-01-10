@@ -63,7 +63,7 @@ const AddWebsitePage = () => {
               <div className="p-2 bg-white rounded-lg">
                 <Plus size={20} className="text-black stroke-3" />
               </div>
-              <h2 className="text-xl font-black uppercase tracking-tighter">Register Node</h2>
+              <h2 className="text-xl font-black uppercase tracking-tighter">Register Website</h2>
             </div>
 
             <div className="space-y-6">
@@ -106,7 +106,7 @@ const AddWebsitePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Site Name */}
               <motion.div whileFocus={{ y: -2 }}>
-                <label className={labelStyle}><Cpu size={12} className="inline mr-2" /> Node Name</label>
+                <label className={labelStyle}><Cpu size={12} className="inline mr-2" /> Website Name</label>
                 <input 
                   type="text" 
                   placeholder="The Tech Catalyst"
@@ -202,7 +202,7 @@ const AddWebsitePage = () => {
               className="w-20 h-20 border-2 border-white/10 border-t-white rounded-full"
             />
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-black uppercase tracking-[0.5em]">Deploying Node</h2>
+              <h2 className="text-2xl font-black uppercase tracking-[0.5em]">Deploying Website</h2>
               <p className="text-gray-500 font-mono text-xs animate-pulse">Syncing manifest to BlogTraffic cluster...</p>
             </div>
           </motion.div>

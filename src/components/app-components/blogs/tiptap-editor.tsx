@@ -107,7 +107,7 @@ const TiptapEditor = ({ onChange, initialContent }: { onChange: (html: string) =
     )
 
     return (
-        <div className="flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-black shadow-sm border border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col rounded-2xl bg-white dark:bg-black shadow-sm border border-zinc-200 dark:border-zinc-800">
             <style jsx global>{`
                 .tiptap-editor {
                     font-family: ui-sans-serif, system-ui, sans-serif;
@@ -250,7 +250,7 @@ const TiptapEditor = ({ onChange, initialContent }: { onChange: (html: string) =
             `}</style>
 
             {/* Toolbar */}
-            <div className='flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2 sticky top-0 z-10'>
+            <div className='flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2 sticky top-36 z-10 rounded-t-2xl'>
                 <div className="flex flex-wrap gap-1 rounded-lg">
                     {/* Text Formatting */}
                     <div className="flex gap-1 items-center">
@@ -560,7 +560,7 @@ const TiptapEditor = ({ onChange, initialContent }: { onChange: (html: string) =
             <div className="relative">
                 <EditorContent editor={editor} />
                 {/* Subtle gradient overlay at bottom for depth - adapted */}
-                <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-white/80 dark:from-black/50 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-white/80 dark:from-black/50 to-transparent pointer-events-none rounded-b-2xl" />
             </div>
         </div>
     )

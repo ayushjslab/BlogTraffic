@@ -70,6 +70,8 @@ const PreviewPage = () => {
         })
     }
 
+    console.log(blog.content)
+
     // Custom parsing options
     const options = {
         replace: (domNode: DOMNode) => {
@@ -150,7 +152,7 @@ const PreviewPage = () => {
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-bold tracking-wider uppercase mb-6 border border-purple-500/20">
                             Blog Post Preview
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-transparent mb-8 leading-[1.05] bg-clip-text bg-linear-to-b from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-transparent mb-8 leading-[1.1] bg-clip-text bg-linear-to-b from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
                             {blog.title || "Untitled Masterpiece"}
                         </h1>
                     </motion.div>
@@ -201,7 +203,7 @@ const PreviewPage = () => {
                     prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-zinc-900 dark:prose-headings:text-white
                     
                     /* Paragraphs */
-                    prose-p:text-zinc-600 dark:prose-p:text-zinc-300 prose-p:leading-relaxed
+                    prose-p:text-zinc-600 dark:prose-p:text-zinc-300 prose-p:leading-loose prose-p:my-6
                     
                     /* Links */
                     prose-a:text-purple-600 dark:prose-a:text-purple-400 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold
@@ -216,7 +218,7 @@ const PreviewPage = () => {
                     prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0 prose-pre:border-none prose-pre:shadow-none
                     
                     /* Lists - Force Override */
-                    [&_ul]:list-disc! [&_ol]:list-decimal! [&_ul]:pl-6! [&_ol]:pl-6! [&_li]:pl-1! [&_li]:marker:text-zinc-400 dark:[&_li]:marker:text-zinc-500
+                    [&_ul]:list-disc! [&_ol]:list-decimal! [&_ul]:pl-6! [&_ol]:pl-6! [&_li]:pl-1! [&_li]:my-2! [&_li]:marker:text-zinc-400 dark:[&_li]:marker:text-zinc-500
                     "
                 >
                     {parse(cleanContent, options)}

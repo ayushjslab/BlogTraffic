@@ -145,7 +145,7 @@ export default function BlogEditorPage() {
   return (
     <div className=" mt-20 bg-white dark:bg-black transition-colors duration-300">
       {/* --- MODERN HEADER --- */}
-      <header className="sticky top-0 z-50 bg-white/70 dark:bg-black backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800">
+      <header className="sticky top-20 z-50 bg-white/70 dark:bg-black backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800">
         <div className="w-full px-4 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link

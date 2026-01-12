@@ -25,9 +25,9 @@ const DashboardLayoutPage = ({ children }: { children: React.ReactNode }) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative pt-24 p-8 lg:p-12"
+          className=""
         >
-          <div className="max-w-7xl mx-auto relative z-10">
+          <div className="relative z-10">
             {children}
           </div>
         </motion.main>

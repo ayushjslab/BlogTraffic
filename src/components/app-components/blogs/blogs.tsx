@@ -2,6 +2,7 @@
 import { useWebsiteStore } from "@/lib/store";
 import { motion } from "framer-motion";
 import { ArrowUpRight, MoreHorizontal, Clock, CheckCircle2, CircleDashed } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Blog {
@@ -16,6 +17,8 @@ const BlogList = () => {
   const [latestUpdate, setLatestUpdate] = useState<string | null>(null);
 
   const currentWebsiteId = useWebsiteStore((state) => state.currentWebsiteId);
+
+  const router = useRouter()
 
   useEffect(() => {
     if (!currentWebsiteId) return;
@@ -68,8 +71,9 @@ const BlogList = () => {
             key={blog._id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            onClick={() => router.push(`/blogs/${blog._id}`)}
             transition={{ delay: index * 0.1, duration: 0.5 }}
-            className="group relative bg-[#050505] hover:bg-white/2 transition-all duration-500 p-6 md:px-10 flex items-center justify-between"
+            className="group relative cursor-pointer bg-[#050505] hover:bg-white/2 transition-all duration-500 p-6 md:px-10 flex items-center justify-between"
           >
             {/* Left */}
             <div className="flex items-center gap-6 z-10">
@@ -77,7 +81,7 @@ const BlogList = () => {
                 0{index + 1}
               </span>
               <div className="space-y-1">
-                <h3 className="text-lg font-bold tracking-tight group-hover:text-white transition-colors cursor-pointer flex items-center gap-2">
+                <h3 className="text-lg font-bold tracking-tight group-hover:text-white transition-colors flex items-center gap-2">
                   {blog.title}
                   <ArrowUpRight
                     size={14}

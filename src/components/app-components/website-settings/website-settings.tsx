@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion} from 'framer-motion';
 import {
-  Globe, Cpu, Settings2, Trash2, Save, ArrowLeft,
-  Activity, Fingerprint, ExternalLink, AlertTriangle, ShieldAlert
+  Settings2, Trash2, Save,
+  Activity, Fingerprint, AlertTriangle, ShieldAlert
 } from 'lucide-react';
 
 import {

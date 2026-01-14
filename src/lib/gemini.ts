@@ -5,5 +5,5 @@ const genAI = new GoogleGenerativeAI(
 );
 
 export const geminiModel = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash-lite",
+  model: "gemini-3-flash-preview",
 });

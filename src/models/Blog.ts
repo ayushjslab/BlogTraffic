@@ -9,7 +9,10 @@ export interface IPost {
   content?: string;
   seoTitle?: string;
   seoDescription?: string;
-  keywords?: string[];
+  keywords?: [{
+    name: String,
+    volume: Number
+  }];
   status?: "draft" | "scheduled" | "published" | "failed";
   scheduledFor?: Date;
   publishedAt?: Date;
@@ -28,7 +31,10 @@ const BlogSchema = new Schema<IPost>(
 
     seoTitle: String,
     seoDescription: String,
-    keywords: [{ type: String }],
+    keywords: [{
+      name: String,
+      volume: Number
+    }],
 
     status: {
       type: String,

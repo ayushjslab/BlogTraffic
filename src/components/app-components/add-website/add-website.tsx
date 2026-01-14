@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, Cpu, Link2, TextQuote, Plus, ArrowRight, ShieldCheck, Activity } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -7,8 +7,8 @@ import { useSession } from 'next-auth/react';
 const AddWebsitePage = () => {
   const [formData, setFormData] = useState({ name: '', url: '', desc: '', endpoint: '' });
   const [isDeploying, setIsDeploying] = useState(false);
-  const {data: session} = useSession();
-
+  const { data: session } = useSession();
+  const [countdown, setCountdown] = useState(30);
   const inputStyle = "w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/40 transition-all duration-500 font-mono text-sm";
   const labelStyle = "text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-2 block ml-1";
 
@@ -39,9 +39,22 @@ const AddWebsitePage = () => {
     }
   };
 
+  useEffect(() => {
+    let timer : NodeJS.Timeout;
+    if (isDeploying && countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    } else if (!isDeploying) {
+      setCountdown(30); // Reset when not deploying
+    }
+
+    return () => clearInterval(timer);
+  }, [isDeploying, countdown]);
+
   return (
     <div className="min-h-screen w-full bg-[#050505] text-white flex flex-col items-center justify-center p-6 selection:bg-white selection:text-black">
-      
+
       {/* 1. Cinematic Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/2 rounded-full blur-[120px]" />
@@ -50,12 +63,12 @@ const AddWebsitePage = () => {
       </div>
 
       {/* 2. Main Terminal Container */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-1 bg-white/2 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-3xl shadow-2xl"
       >
-        
+
         {/* LEFT PANEL: Meta Information (4 cols) */}
         <div className="lg:col-span-4 p-10 bg-white/2 border-r border-white/5 flex flex-col justify-between">
           <div className="space-y-8">
@@ -83,11 +96,11 @@ const AddWebsitePage = () => {
                   <span className="text-white">98.2%</span>
                 </div>
                 <div className="h-[2px] w-full bg-white/5 overflow-hidden">
-                  <motion.div 
+                  <motion.div
                     initial={{ x: '-100%' }}
                     animate={{ x: '0%' }}
                     transition={{ duration: 2 }}
-                    className="h-full w-full bg-linear-to-r from-transparent via-white/40 to-transparent" 
+                    className="h-full w-full bg-linear-to-r from-transparent via-white/40 to-transparent"
                   />
                 </div>
               </div>
@@ -107,22 +120,22 @@ const AddWebsitePage = () => {
               {/* Site Name */}
               <motion.div whileFocus={{ y: -2 }}>
                 <label className={labelStyle}><Cpu size={12} className="inline mr-2" /> Website Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="The Tech Catalyst"
                   className={inputStyle}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </motion.div>
 
               {/* URL */}
               <motion.div whileFocus={{ y: -2 }}>
                 <label className={labelStyle}><Globe size={12} className="inline mr-2" /> Primary Domain</label>
-                <input 
-                  type="url" 
+                <input
+                  type="url"
                   placeholder="https://catalog.io"
                   className={inputStyle}
-                  onChange={(e) => setFormData({...formData, url: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                 />
               </motion.div>
             </div>
@@ -130,11 +143,11 @@ const AddWebsitePage = () => {
             {/* Description */}
             <motion.div whileFocus={{ y: -2 }}>
               <label className={labelStyle}><TextQuote size={12} className="inline mr-2" /> Manifest / Description</label>
-              <textarea 
+              <textarea
                 rows={3}
                 placeholder="Briefly define the purpose of this content hub..."
                 className={inputStyle + " resize-none"}
-                onChange={(e) => setFormData({...formData, desc: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
               />
             </motion.div>
 
@@ -142,11 +155,11 @@ const AddWebsitePage = () => {
             <motion.div whileFocus={{ y: -2 }}>
               <label className={labelStyle}><Link2 size={12} className="inline mr-2" /> Retrieval Endpoint</label>
               <div className="relative">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="/api/v1/posts"
                   className={inputStyle + " pl-12"}
-                  onChange={(e) => setFormData({...formData, endpoint: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, endpoint: e.target.value })}
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs font-mono">/</div >
               </div>
@@ -173,7 +186,7 @@ const AddWebsitePage = () => {
       </motion.div>
 
       {/* 3. Real-time Status Bar */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -190,20 +203,28 @@ const AddWebsitePage = () => {
       {/* Full Screen Deployment Overlay */}
       <AnimatePresence>
         {isDeploying && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-100 bg-black flex flex-col items-center justify-center space-y-8"
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center space-y-8"
           >
-            <motion.div 
+            <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-              className="w-20 h-20 border-2 border-white/10 border-t-white rounded-full"
-            />
+              className="relative w-24 h-24 border-2 border-white/10 border-t-white rounded-full flex items-center justify-center"
+            >
+              {/* Countdown inside the circle */}
+              <span className="text-white font-mono text-xl">{countdown}s</span>
+            </motion.div>
+
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-black uppercase tracking-[0.5em]">Deploying Website</h2>
-              <p className="text-gray-500 font-mono text-xs animate-pulse">Syncing manifest to BlogTraffic cluster...</p>
+              <p className="text-gray-500 font-mono text-xs animate-pulse">
+                {countdown > 0
+                  ? `Finalizing build in ${countdown}s...`
+                  : "Launch imminent..."}
+              </p>
             </div>
           </motion.div>
         )}

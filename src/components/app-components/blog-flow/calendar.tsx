@@ -8,6 +8,7 @@ import {
   Calendar as CalendarIcon
 } from 'lucide-react';
 import { useWebsiteStore } from '@/lib/store';
+import axios from 'axios';
 
 interface Blog {
   _id: string;
@@ -48,7 +49,7 @@ const ModernCalendar = () => {
       try {
         const res = await fetch(`/api/blogs?websiteId=${currentWebsiteId}`);
         const data = await res.json();
-        setBlogs(data.blogs || []);
+        setBlogs(data.blogs);
       } catch (err) {
         console.error("Error fetching blogs:", err);
       }
@@ -58,6 +59,16 @@ const ModernCalendar = () => {
   }, [currentWebsiteId]);
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  async function geterateBlog(blog: Blog){
+    try {
+      console.log(blog)
+      const res = await axios.post(`/api/blogs/${blog._id}/ai-generated`, blog)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   return (
     <div className={`${isDark ? 'bg-[#050505] text-white' : 'bg-[#f8f9fa] text-zinc-900'} min-h-screen p-6 md:p-12`}>
@@ -184,7 +195,7 @@ const ModernCalendar = () => {
                         </>
                       ) : blog?.status === "draft" ? (
                         <>
-                        <button className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-zinc-800 cursor-pointer text-zinc-500 hover:text-blue-500 text-[10px] font-black uppercase">
+                        <button onClick={() => geterateBlog(blog)} className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-zinc-800 cursor-pointer text-zinc-500 hover:text-blue-500 text-[10px] font-black uppercase">
                             <Plus size={18} />
                             Pre Generate
                           </button>

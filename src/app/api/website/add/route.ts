@@ -109,13 +109,20 @@ OUTPUT FORMAT (MANDATORY):
 
     const titlesArray = extractTitlesArray(rawText);
     console.log(titlesArray)
+    const baseDate = new Date();
 
-    const blogs = titlesArray.map((title, index) => ({
-      websiteId: website._id,
-      userId,
-      title,
-      status: "draft",
-    }));
+    const blogs = titlesArray.map((title, index) => {
+      const scheduledFor = new Date(baseDate);
+      scheduledFor.setDate(baseDate.getDate() + index + 1); 
+
+      return {
+        websiteId: website._id,
+        userId,
+        title,
+        status: "draft",
+        scheduledFor,
+      };
+    });
 
     await Blog.insertMany(blogs);
     return NextResponse.json(

@@ -12,10 +12,10 @@ const DashboardLayoutPage = ({ children }: { children: React.ReactNode }) => {
       <Sidebar />
 
       {/* 2. RIGHT: Main Scrollable Area */}
-      <div className="flex-1 flex flex-col ml-24 relative">
+      <div className="flex-1 flex flex-col ml-20 relative">
 
         {/* TOP FIXED NAVIGATION BAR */}
-        <header className="fixed top-0 right-0 left-24 z-40 h-20 px-8 flex items-center justify-between border-b border-white/5 backdrop-blur-md bg-[#050505]/40">
+        <header className="fixed top-0 right-0 left-20 z-40 h-20 px-8 flex items-center justify-between border-b border-white/5 backdrop-blur-md bg-[#050505]/40">
 
           <WebsiteDropdown />
         </header>
@@ -27,7 +27,7 @@ const DashboardLayoutPage = ({ children }: { children: React.ReactNode }) => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className=""
         >
-          <div className="relative z-10">
+          <div className="relative z-10 mt-16">
             {children}
           </div>
         </motion.main>

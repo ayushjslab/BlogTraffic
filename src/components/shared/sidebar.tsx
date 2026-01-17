@@ -13,15 +13,16 @@ import {
   LogOut,
   Zap,
   FolderPlus,
-  FolderCog
+  FolderCog,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import { IoCalendarOutline } from "react-icons/io5";
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: FolderPlus, label: 'Add Website', href: '/add-website' },
   { icon: FolderCog, label: "Website Settings", href: '/website-settings' },
+  { icon: IoCalendarOutline, label: "Publish", href: '/publish' },
   { icon: FileText, label: 'Blogs', href: '/blogs' },
   { icon: BarChart3, label: 'Analytics', href: '/analytics' },
   { icon: Settings, label: 'Settings', href: '/settings' },

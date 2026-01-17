@@ -11,6 +11,10 @@ import { useWebsiteStore } from '@/lib/store';
 import axios from 'axios';
 
 interface Blog {
+  keywords: [{
+    name: string;
+    volume: number;
+  }];
   _id: string;
   title: string;
   status: "draft" | "scheduled" | "published" | "failed";
@@ -60,10 +64,10 @@ const ModernCalendar = () => {
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  async function geterateBlog(blog: Blog){
+  async function geterateBlog(blog: Blog) {
     try {
       console.log(blog)
-      const res = await axios.post(`/api/blogs/${blog._id}/ai-generated`, blog)
+      const res = await axios.post(`/api/blogs/${blog._id}/ai-generated`)
     } catch (error) {
       console.log(error)
     }
@@ -181,27 +185,61 @@ const ModernCalendar = () => {
                       )}
                     </div>
 
-                    <div className="mt-4 grow relative pb-12">
-                      <p className="text-sm font-bold leading-tight line-clamp-3 text-zinc-100">
-                        {blog?.title}
-                      </p>
-                      {blog?.status === "published" ? (
-                        <>
+                    <div className="mt-4 grow relative pb-16"> {/* Increased padding for better breathability */}
+                      {blog ? (
+                        <div className="flex flex-col h-full">
+                          {/* Top Section: Keyword/Title */}
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-500/80">
+                              Primary Keyword
+                            </span>
+                            <p className={`text-sm font-bold leading-tight line-clamp-2 ${isDark ? 'text-zinc-100' : 'text-zinc-800'}`}>
+                              {blog?.keywords?.[0]?.name || "Untitled Insight"}
+                            </p>
+                          </div>
 
-                          <button className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-blue-500/30 bg-blue-500/5 cursor-pointer text-blue-400 hover:bg-blue-500 hover:text-white text-[10px] font-black uppercase">
-                            <Eye size={14} />
-                            View Article
-                          </button>
-                        </>
-                      ) : blog?.status === "draft" ? (
-                        <>
-                        <button onClick={() => geterateBlog(blog)} className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-zinc-800 cursor-pointer text-zinc-500 hover:text-blue-500 text-[10px] font-black uppercase">
-                            <Plus size={18} />
-                            Pre Generate
-                          </button>
-                        </>
+                          {/* Middle Section: Metrics with a subtle background */}
+                          <div className={`mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-lg w-fit ${isDark ? 'bg-zinc-800/50' : 'bg-zinc-100'
+                            }`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-bold opacity-70 uppercase tracking-tighter">
+                              Vol: {blog?.keywords?.[0]?.volume?.toLocaleString()}
+                            </span>
+                          </div>
+
+                          {/* Action Area */}
+                          <div className="absolute bottom-0 left-0 right-0">
+                            {blog?.status === "published" ? (
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-blue-500 bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)] text-[10px] font-black uppercase tracking-widest transition-all"
+                              >
+                                <Eye size={14} strokeWidth={3} />
+                                View Article
+                              </motion.button>
+                            ) : (
+                              <motion.button
+                                onClick={() => geterateBlog(blog)}
+                                whileHover={{ scale: 1.02, borderColor: 'rgb(59, 130, 246)' }}
+                                whileTap={{ scale: 0.98 }}
+                                className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed text-[10px] font-black uppercase tracking-widest transition-all
+              ${isDark
+                                    ? 'border-zinc-800 text-zinc-500 hover:text-blue-400'
+                                    : 'border-zinc-200 text-zinc-400 hover:text-blue-600'}
+            `}
+                              >
+                                <Plus size={16} strokeWidth={3} />
+                                Pre Generate
+                              </motion.button>
+                            )}
+                          </div>
+                        </div>
                       ) : (
-                        <></>
+                        /* Empty State for unplanned days */
+                        <div className="h-full flex items-center justify-center border-2 border-dashed border-zinc-800/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Plus className="text-zinc-500" />
+                        </div>
                       )}
                     </div>
 

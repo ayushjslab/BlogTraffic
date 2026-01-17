@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     const blogs = await Blog.find({ websiteId })
       .sort({ publishDate: 1 })
-      .select("_id title status updatedAt scheduledFor createdAt").lean();
+      .select("_id title status updatedAt scheduledFor keywords createdAt").lean();
 
     const latestUpdate =
       blogs.length > 0 ? blogs[blogs.length - 1].updatedAt.toString() : null;

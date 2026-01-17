@@ -1,0 +1,17 @@
+name: Domain API Cron
+
+on:
+  schedule:
+    - cron: "0 5 * * *"  
+  workflow_dispatch:
+
+jobs:
+  call-domain-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call /api/domain
+        run: |
+          curl -X POST \
+          https://yourapp.vercel.app/api/domain \
+          -H "Content-Type: application/json"

@@ -2,7 +2,7 @@ import { openai } from "./openai";
 
 export async function generateWithChatGPT(prompt: string) {
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini", // fast + cheap
+    model: "chatgpt-4o-latest", // fast + cheap
     messages: [
       {
         role: "system",
@@ -14,7 +14,7 @@ export async function generateWithChatGPT(prompt: string) {
       }
     ],
     temperature: 0.5,
-  });
+  }); 
 
   return response.choices[0].message.content;
 }

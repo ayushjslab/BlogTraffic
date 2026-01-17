@@ -78,7 +78,6 @@ export default function BlogEditorPage() {
         setSeoTitle(blog.seoTitle || "")
         setSeoDescription(blog.seoDescription || "")
         setStatus(blog.status || "draft")
-        setKeywords(blog.keywords || [])
       } catch (error) {
         toast.error("Error loading blog post")
       } finally {
@@ -102,7 +101,6 @@ export default function BlogEditorPage() {
         slug,
         seoTitle,
         seoDescription,
-        keywords,
         status: finalStatus,
       }
 

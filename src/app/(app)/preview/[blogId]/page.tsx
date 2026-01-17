@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { Loader2, Calendar, Clock, Tag, ChevronLeft, Share2 } from "lucide-react"
+import { Loader2, Calendar, Clock, ChevronLeft, Share2 } from "lucide-react"
 import { format } from "date-fns"
 import parse, { DOMNode, Element } from 'html-react-parser'
 import DOMPurify from 'dompurify'
@@ -16,13 +16,14 @@ interface BlogPost {
     content: string;
     updatedAt: string;
     keywords: string[];
-    readTime?: number; // Estimated read time
+    readTime?: number;
 }
 
 const PreviewPage = () => {
     const { blogId } = useParams()
     const [blog, setBlog] = useState<BlogPost | null>(null)
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const { scrollYProgress } = useScroll();
     const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
     const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -32,15 +33,20 @@ const PreviewPage = () => {
 
         const fetchData = async () => {
             try {
+                setLoading(true)
+                setError(null)
                 const res = await fetch(`/api/blogs/${blogId}`)
-                if (!res.ok) throw new Error("Failed to fetch")
+                if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`)
                 const data = await res.json()
-                // simple read time calc: 200 words per minute
-                const words = data.blog.content?.replace(/<[^>]*>?/gm, '').split(/\s+/).length || 0;
-                const readTime = Math.ceil(words / 200);
+                
+                // Calculate read time: 200 words per minute
+                const words = data.blog.content?.replace(/<[^>]*>?/gm, '').split(/\s+/).filter(Boolean).length || 0;
+                const readTime = Math.max(1, Math.ceil(words / 200));
+                
                 setBlog({ ...data.blog, readTime })
-            } catch (error) {
-                console.error(error)
+            } catch (err) {
+                console.error('Error fetching blog:', err)
+                setError(err instanceof Error ? err.message : 'Failed to load blog')
             } finally {
                 setLoading(false)
             }
@@ -48,55 +54,67 @@ const PreviewPage = () => {
         fetchData()
     }, [blogId])
 
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-[#050505]">
-                <div className="relative">
-                    <div className="absolute inset-0 bg-linear-to-tr from-purple-500 to-blue-500 blur-xl opacity-20 animate-pulse" />
-                    <Loader2 className="w-10 h-10 animate-spin text-zinc-900 dark:text-white relative z-10" />
-                </div>
-                <p className="mt-4 text-sm font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-widest animate-pulse">Loading Experience</p>
-            </div>
-        )
-    }
-
-    if (!blog) return <div className="min-h-screen flex items-center justify-center text-zinc-500 dark:text-zinc-400">Content unavailable</div>
-
-    // Configure sanitization
+    // Sanitize content
     const sanitizeContent = (content: string) => {
         return DOMPurify.sanitize(content, {
             ADD_TAGS: ['iframe'],
-            ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
+            ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'width', 'height']
         })
     }
 
-    console.log(blog.content)
+    // Extract text content from DOM nodes recursively
+    const extractTextContent = (node: any): string => {
+        if (!node) return '';
+        if (typeof node === 'string') return node;
+        if (node.data) return node.data;
+        if (Array.isArray(node)) {
+            return node.map(extractTextContent).join('');
+        }
+        if (node.children && Array.isArray(node.children)) {
+            return node.children.map(extractTextContent).join('');
+        }
+        return '';
+    };
 
-    // Custom parsing options
+    // Custom parsing options with proper TypeScript types
     const options = {
         replace: (domNode: DOMNode) => {
-            if (domNode instanceof Element && domNode.name === 'pre') {
-                const codeNode = domNode.children[0] as Element;
-                if (codeNode && codeNode.name === 'code' && codeNode.children.length > 0) {
+            if (!(domNode instanceof Element)) return;
+            
+            if (domNode.name === 'pre') {
+                const codeNode = domNode.children?.[0] as Element | undefined;
+                if (codeNode?.name === 'code') {
+                    // Extract text content safely
+                    const textContent = extractTextContent(codeNode.children || []);
+                    
+                    // Detect language from class name
+                    const className = codeNode.attribs?.class || '';
+                    const languageMatch = className.match(/language-(\w+)/);
+                    const language = languageMatch ? languageMatch[1] : '';
+
                     return (
                         <div className="relative group my-8">
-                            <div className="absolute -inset-1 bg-linear-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
                             <div className="relative rounded-xl bg-[#0d1117] border border-zinc-800 shadow-2xl overflow-hidden">
-                                <div className="flex items-center justify-between px-4 py-3 bg-[#0d1117] border-b border-zinc-800">
+                                <div className="flex items-center justify-between px-4 py-3 bg-[#161b22] border-b border-zinc-800">
                                     <div className="flex gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
-                                        <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                                        <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
                                     </div>
-                                    <div className="text-[10px] uppercase font-mono text-zinc-500 tracking-wider">Code</div>
+                                    {language && (
+                                        <div className="text-[10px] uppercase font-mono text-zinc-500 tracking-wider">
+                                            {language}
+                                        </div>
+                                    )}
                                 </div>
-                                <pre className="bg-transparent! m-0! p-0!">
+                                <pre className="!bg-transparent !m-0 !p-0">
                                     <code
-                                        className="hljs block p-6 text-sm overflow-x-auto font-mono leading-relaxed text-zinc-300"
+                                        className="hljs block p-6 text-sm overflow-x-auto font-mono leading-relaxed"
                                         dangerouslySetInnerHTML={{
-                                            __html: hljs.highlightAuto(
-                                                (codeNode.children[0] as any)?.data || ''
-                                            ).value
+                                            __html: language 
+                                                ? hljs.highlight(textContent, { language }).value
+                                                : hljs.highlightAuto(textContent).value
                                         }}
                                     />
                                 </pre>
@@ -108,6 +126,60 @@ const PreviewPage = () => {
         }
     };
 
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: blog?.title || 'Blog Post',
+                    url: window.location.href
+                })
+            } catch (err) {
+                if ((err as Error).name !== 'AbortError') {
+                    console.error('Error sharing:', err)
+                }
+            }
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => alert('Link copied to clipboard!'))
+                .catch(err => console.error('Failed to copy:', err))
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-[#050505]">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-purple-500 to-blue-500 blur-xl opacity-20 animate-pulse" />
+                    <Loader2 className="w-10 h-10 animate-spin text-zinc-900 dark:text-white relative z-10" />
+                </div>
+                <p className="mt-4 text-sm font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-widest animate-pulse">
+                    Loading Experience
+                </p>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#050505] text-zinc-500 dark:text-zinc-400">
+                <p className="text-lg font-semibold mb-2">Error loading blog post</p>
+                <p className="text-sm">{error}</p>
+                <Link href="/" className="mt-4 text-purple-600 hover:underline">
+                    Return to home
+                </Link>
+            </div>
+        )
+    }
+
+    if (!blog) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-zinc-500 dark:text-zinc-400">
+                Content unavailable
+            </div>
+        )
+    }
+
     const cleanContent = sanitizeContent(blog.content || "");
 
     return (
@@ -117,22 +189,29 @@ const PreviewPage = () => {
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen opacity-50 dark:opacity-20" />
                 <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen opacity-50 dark:opacity-20" />
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay" />
             </div>
 
-            {/* Navigation Element */}
+            {/* Navigation */}
             <motion.nav
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-between items-center pointer-events-none"
             >
-                <Link href={`/blogs/${blogId}`} className="pointer-events-auto flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors group backdrop-blur-md bg-white/50 dark:bg-black/50 px-4 py-2 rounded-full border border-zinc-200/50 dark:border-zinc-800/50">
+                <Link 
+                    href={`/blogs/${blogId}`} 
+                    className="pointer-events-auto flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors group backdrop-blur-md bg-white/50 dark:bg-black/50 px-4 py-2 rounded-full border border-zinc-200/50 dark:border-zinc-800/50"
+                >
                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <span className="text-sm font-medium">Back to Editor</span>
                 </Link>
 
-                <button className="pointer-events-auto flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors group backdrop-blur-md bg-white/50 dark:bg-black/50 px-3 py-2 rounded-full border border-zinc-200/50 dark:border-zinc-800/50">
+                <button 
+                    onClick={handleShare}
+                    className="pointer-events-auto flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors group backdrop-blur-md bg-white/50 dark:bg-black/50 px-3 py-2 rounded-full border border-zinc-200/50 dark:border-zinc-800/50"
+                    aria-label="Share this blog post"
+                >
                     <Share2 className="w-4 h-4" />
                 </button>
             </motion.nav>
@@ -152,7 +231,7 @@ const PreviewPage = () => {
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-bold tracking-wider uppercase mb-6 border border-purple-500/20">
                             Blog Post Preview
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-transparent mb-8 leading-[1.1] bg-clip-text bg-linear-to-b from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-transparent mb-8 leading-[1.1] bg-clip-text bg-gradient-to-b from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
                             {blog.title || "Untitled Masterpiece"}
                         </h1>
                     </motion.div>
@@ -165,7 +244,9 @@ const PreviewPage = () => {
                     >
                         <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-zinc-400" />
-                            <time>{format(new Date(blog.updatedAt), "MMMM d, yyyy")}</time>
+                            <time dateTime={blog.updatedAt}>
+                                {format(new Date(blog.updatedAt), "MMMM d, yyyy")}
+                            </time>
                         </div>
                         <div className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
                         <div className="flex items-center gap-2">
@@ -181,8 +262,11 @@ const PreviewPage = () => {
                             transition={{ delay: 0.3, duration: 0.8 }}
                             className="flex flex-wrap justify-center gap-2 mt-8"
                         >
-                            {blog.keywords.map((tag) => (
-                                <span key={tag} className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 text-xs font-semibold border border-zinc-200 dark:border-zinc-800">
+                            {blog.keywords.map((tag, i) => (
+                                <span 
+                                    key={i} 
+                                    className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 text-xs font-semibold border border-zinc-200 dark:border-zinc-800"
+                                >
                                     #{tag}
                                 </span>
                             ))}
@@ -190,7 +274,7 @@ const PreviewPage = () => {
                     )}
                 </motion.header>
 
-                <hr className="border-0 h-px bg-linear-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent mb-20" />
+                <hr className="border-0 h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent mb-20" />
 
                 {/* Content */}
                 <motion.article
@@ -198,33 +282,19 @@ const PreviewPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.8 }}
                     className="prose prose-lg md:prose-xl dark:prose-invert max-w-none mx-auto
-                    
-                    /* Headings */
                     prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-zinc-900 dark:prose-headings:text-white
-                    
-                    /* Paragraphs */
                     prose-p:text-zinc-600 dark:prose-p:text-zinc-300 prose-p:leading-loose prose-p:my-6
-                    
-                    /* Links */
                     prose-a:text-purple-600 dark:prose-a:text-purple-400 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold
-                    
-                    /* Blockquotes */
                     prose-blockquote:border-l-4 prose-blockquote:border-purple-500 prose-blockquote:bg-purple-500/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                    
-                    /* Images */
                     prose-img:rounded-2xl prose-img:shadow-2xl prose-img:border prose-img:border-zinc-200 dark:prose-img:border-zinc-800/50 prose-img:w-full prose-img:object-cover
-                    
-                    /* Reset Pre for Custom Component */
-                    prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0 prose-pre:border-none prose-pre:shadow-none
-                    
-                    /* Lists - Force Override */
-                    [&_ul]:list-disc! [&_ol]:list-decimal! [&_ul]:pl-6! [&_ol]:pl-6! [&_li]:pl-1! [&_li]:my-2! [&_li]:marker:text-zinc-400 dark:[&_li]:marker:text-zinc-500
+                    prose-pre:!bg-transparent prose-pre:!p-0 prose-pre:!m-0 prose-pre:!border-none prose-pre:!shadow-none
+                    [&_ul]:!list-disc [&_ol]:!list-decimal [&_ul]:!pl-6 [&_ol]:!pl-6 [&_li]:!pl-1 [&_li]:!my-2 [&_li]:marker:text-zinc-400 dark:[&_li]:marker:text-zinc-500
                     "
                 >
                     {parse(cleanContent, options)}
                 </motion.article>
 
-                {/* Footer / End Mark */}
+                {/* Footer */}
                 <div className="mt-32 flex justify-center opacity-50">
                     <div className="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 mx-1" />
                     <div className="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 mx-1" />
